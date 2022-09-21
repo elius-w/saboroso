@@ -8,8 +8,7 @@ var RedisStore = require('connect-redis')(session);
 var path = require('path');
 var formidable = require('formidable');
 
-var indexRouter = require('./routes/index');
-var adminRouter = require('./routes/admin');
+
 
 var app = express();
 
@@ -28,6 +27,9 @@ io.on("connection", (socket) => {
   })
 
 });
+
+var indexRouter = require('./routes/index')(io);
+var adminRouter = require('./routes/admin')(io);
 
 
 
