@@ -1,6 +1,8 @@
 var pagination = require("./../inc/pagination")
 var conn = require("./db")
 
+var moment = require("moment")
+
 module.exports = {
 
     render(req, res, error, success) {
@@ -73,19 +75,45 @@ module.exports = {
         })
 
     },
-    getReservations(page) {
+    getReservations(req) {
 
-        if (!page) page = 1
+        return new Promise((resolve, reject)=>{
 
-        let pag = new pagination(
+            let page = req.query.page
+            let dtstart = req.query.start
+            let dtend = req.query.end
 
-            `
-                SELECT SQL_CALC_FOUND_ROWS * FROM tb_reservations ORDER BY name LIMIT ?, ?
-            `
-        )
-        
-        return pag.getPage(page)
+            if (!page) page = 1
+
+            let params = []
+
+            if ( dtstart && dtend) params.push(dtstart, dtend)
+
+            let pag = new pagination(
+
+                `
+                    SELECT SQL_CALC_FOUND_ROWS * 
+                    FROM tb_reservations 
+                    ${( dtstart && dtend ) ? 'WHERE date BETWEEN ? AND ?' : ''}
+                    ORDER BY name LIMIT ?, ?
+                `,
+                params
+            )
+            
+            
+            pag.getPage(page).then(data =>{
+
+                resolve({
+                    data,
+                    links: pag.getNavigation(req.query)
+                })
+
+            })
+           
+
+        })
     },
+
     delete(id){
 
         return new Promise((resolve, reject) => {
@@ -104,6 +132,55 @@ module.exports = {
 
             })
 
+
+        })
+
+    },
+
+    chart(req){
+
+        return new Promise((resolve, reject) =>{
+
+            conn.query(`
+            
+            SELECT
+                CONCAT(YEAR(date), '-', MONTH(date)) AS date,        
+                COUNT(*) AS total,        
+                SUM(people) / COUNT(*) AS avg_people        
+            FROM        
+                tb_reservations        
+            WHERE        
+            date BETWEEN ? AND ?        
+            GROUP BY YEAR(date), MONTH(date)        
+            ORDER BY YEAR(date) DESC, MONTH(date) DESC;
+            
+            `,[
+
+                req.query.start,
+                req.query.end              
+
+            ],(err, results)=>{
+
+                if(err){
+                    reject(err)
+                }else{
+
+                    let months = []
+                    let values = []
+
+                    results.forEach(row =>{
+
+                        months.push(moment(row.date).format('MM YYYY'))
+                        values.push(row.total)
+                    })
+
+                    resolve({
+                        months,
+                        values
+                    })
+
+                }
+            })
 
         })
 
