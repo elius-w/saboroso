@@ -92,3 +92,17 @@
   <!-- /.content-wrapper -->
 
   <%- include("inc/footer") -%>
+
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+
+    let socket = io()
+
+    socket.on("reservations update", function(data){
+
+      console.log("recebi o evento", data)
+
+    })
+
+  </script>

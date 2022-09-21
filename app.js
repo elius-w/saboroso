@@ -13,6 +13,24 @@ var adminRouter = require('./routes/admin');
 
 var app = express();
 
+var http = require("http");
+var Server  = require("socket.io");
+
+var http = http.createServer(app);
+var io =  Server(http);
+
+io.on("connection", (socket) => {
+
+  console.log('Novo usuário conectado')
+
+  io.emit("reservations update", {
+    date: new Date()
+  })
+
+});
+
+
+
 app.use(function(req, res, next) {
 
   let contentType = req.headers["content-type"];
@@ -86,4 +104,10 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-module.exports = app;
+http.listen(3000, function(){
+
+  console.log("Servidor em execução...")
+
+})
+
+
