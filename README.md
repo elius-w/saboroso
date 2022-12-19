@@ -44,6 +44,11 @@ Projeto desenvolvido como exercício do [Curso Completo de JavaScript](https://w
 - Prototype.
 - Criação de componentes.
 
+Install dependencies:
+```
+yarn or npm install
+```
+
 Start do server:
 ```
 npm start
