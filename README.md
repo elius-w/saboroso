@@ -2,8 +2,6 @@
 
 <img src="https://i.postimg.cc/yYyJM6k0/saboroso.gif"/>
 
-[![Hcode Treinamentos](https://www.hcode.com.br/res/img/hcode-200x100.png)](https://www.hcode.com.br)
-
 Projeto desenvolvido como exercício do [Curso Completo de JavaScript](https://www.udemy.com/javascript-curso-completo/) da Hcode na Udemy.com.
 
 ### Recursos Usados
